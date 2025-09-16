@@ -7,13 +7,13 @@ import (
 	"github.com/TheKankan/GoPokedex/internal/pokeapi"
 )
 
-func commandExit(cfg *Config) error {
+func commandExit(cfg *Config, parameter string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(cfg *Config) error {
+func commandHelp(cfg *Config, parameter string) error {
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
@@ -26,7 +26,7 @@ func commandHelp(cfg *Config) error {
 	return nil
 }
 
-func commandMap(cfg *Config) error {
+func commandMap(cfg *Config, parameter string) error {
 	if cfg.NextLocation == "" {
 		cfg.NextLocation = "https://pokeapi.co/api/v2/location-area/"
 	}
@@ -44,7 +44,7 @@ func commandMap(cfg *Config) error {
 	return nil
 }
 
-func commandMapB(cfg *Config) error {
+func commandMapB(cfg *Config, parameter string) error {
 	if cfg.PreviousLocation == "" {
 		fmt.Println("you're on the first page")
 		return nil
@@ -60,5 +60,25 @@ func commandMapB(cfg *Config) error {
 	}
 	cfg.PreviousLocation = locations.Previous
 	cfg.NextLocation = locations.Next
+	return nil
+}
+
+func commandExplore(cfg *Config, parameter string) error {
+
+	if parameter == "" {
+		fmt.Println("Please specify the zone you want to explore : explore [zone]")
+		return nil
+	}
+	exploreUrl := "https://pokeapi.co/api/v2/location-area/" + parameter
+
+	result, err := pokeapi.ListZonePokemon(exploreUrl, &cfg.pokeCache)
+	if err != nil {
+		return err
+	}
+
+	for _, encounter := range result.PokemonEncounters {
+		fmt.Println(encounter.Pokemon.Name)
+	}
+
 	return nil
 }

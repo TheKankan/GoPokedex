@@ -35,9 +35,13 @@ func main() {
 			continue // ignore empty input
 		}
 		cmdName := words[0]
+		cmdParameter := ""
+		if len(words) == 2 {
+			cmdParameter = words[1]
+		}
 		command, exists := getCommands()[cmdName]
 		if exists {
-			err := command.callback(cfg)
+			err := command.callback(cfg, cmdParameter)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -63,7 +67,7 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*Config) error
+	callback    func(*Config, string) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -87,6 +91,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays the previous areas of the Pokemon world",
 			callback:    commandMapB,
+		},
+		"explore": {
+			name:        "explore [zone]",
+			description: "Explores the specified zone to find Pokemons",
+			callback:    commandExplore,
 		},
 	}
 }
