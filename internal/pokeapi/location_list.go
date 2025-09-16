@@ -3,11 +3,24 @@ package pokeapi
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
+
+	"github.com/TheKankan/GoPokedex/internal/pokecache"
 )
 
-func ListLocation(url *string) (LocationList, error) {
-	res, err := http.Get(*url)
+func ListLocation(url string, cache *pokecache.Cache) (LocationList, error) {
+
+	if val, ok := cache.Get(url); ok {
+		var loc LocationList
+		if err := json.Unmarshal(val, &loc); err != nil {
+			return LocationList{}, err
+		}
+		return loc, nil
+	}
+	// not in cache, fetch from API
+
+	res, err := http.Get(url)
 	if err != nil {
 		return LocationList{}, err
 	}
@@ -18,10 +31,17 @@ func ListLocation(url *string) (LocationList, error) {
 		return LocationList{}, errors.New("error: received non-200 response code")
 	}
 
-	var loc LocationList
-	if err := json.NewDecoder(res.Body).Decode(&loc); err != nil {
+	rawJson, err := io.ReadAll(res.Body)
+	if err != nil {
 		return LocationList{}, err
 	}
+
+	var loc LocationList
+	if err := json.Unmarshal(rawJson, &loc); err != nil {
+		return LocationList{}, err
+	}
+
+	cache.Add(url, rawJson)
 	return loc, nil
 
 }

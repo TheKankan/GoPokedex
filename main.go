@@ -5,16 +5,23 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/TheKankan/GoPokedex/internal/pokeapi"
+	"github.com/TheKankan/GoPokedex/internal/pokecache"
 )
 
 type Config struct {
+	pokeCache        pokecache.Cache
 	NextLocation     string
 	PreviousLocation string
 }
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	cfg := &Config{}
+	cfg := &Config{
+		pokeCache: pokeapi.NewCache(5 * time.Second),
+	}
 
 	for {
 		fmt.Print("Pokedex > ")

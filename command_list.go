@@ -31,7 +31,7 @@ func commandMap(cfg *Config) error {
 		cfg.NextLocation = "https://pokeapi.co/api/v2/location-area/"
 	}
 
-	locations, err := pokeapi.ListLocation(&cfg.NextLocation)
+	locations, err := pokeapi.ListLocation(cfg.NextLocation, &cfg.pokeCache)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func commandMapB(cfg *Config) error {
 		return nil
 	}
 
-	locations, err := pokeapi.ListLocation(&cfg.PreviousLocation)
+	locations, err := pokeapi.ListLocation(cfg.PreviousLocation, &cfg.pokeCache)
 	if err != nil {
 		return err
 	}
