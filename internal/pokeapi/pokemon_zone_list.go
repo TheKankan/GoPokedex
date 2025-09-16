@@ -27,6 +27,10 @@ func ListZonePokemon(url string, cache *pokecache.Cache) (PokemonList, error) {
 
 	defer res.Body.Close()
 
+	if res.StatusCode != http.StatusOK {
+		return PokemonList{}, errors.New("zone not found")
+	}
+
 	if res.StatusCode > 299 {
 		return PokemonList{}, errors.New("error: received non-200 response code")
 	}

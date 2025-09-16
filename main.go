@@ -13,6 +13,7 @@ import (
 
 type Config struct {
 	pokeCache        pokecache.Cache
+	caughtPokemon    map[string]pokeapi.PokemonInfos
 	NextLocation     string
 	PreviousLocation string
 }
@@ -20,7 +21,8 @@ type Config struct {
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	cfg := &Config{
-		pokeCache: pokeapi.NewCache(5 * time.Second),
+		pokeCache:     pokeapi.NewCache(5 * time.Second),
+		caughtPokemon: map[string]pokeapi.PokemonInfos{},
 	}
 
 	for {
@@ -79,7 +81,7 @@ func getCommands() map[string]cliCommand {
 		},
 		"exit": {
 			name:        "exit",
-			description: "Exit the Pokedex",
+			description: "Exits the Pokedex",
 			callback:    commandExit,
 		},
 		"map": {
@@ -96,6 +98,21 @@ func getCommands() map[string]cliCommand {
 			name:        "explore [zone]",
 			description: "Explores the specified zone to find Pokemons",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch [pokemon]",
+			description: "catches the specified pokemon",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect [pokemon]",
+			description: "inspect the specified pokemon if you caught it",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "lists the pokemons you have caught",
+			callback:    commandPokedex,
 		},
 	}
 }
