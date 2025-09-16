@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"net/http"
 	"os"
+
+	"github.com/TheKankan/GoPokedex/internal/pokeapi"
 )
 
 func commandExit(cfg *Config) error {
@@ -32,71 +31,34 @@ func commandMap(cfg *Config) error {
 		cfg.NextLocation = "https://pokeapi.co/api/v2/location-area/"
 	}
 
-	/*pokeapi.listLocation(cfg.NextLocation)
+	locations, err := pokeapi.ListLocation(&cfg.NextLocation)
 	if err != nil {
 		return err
 	}
 
-	res, err := http.Get(cfg.NextLocation)
-	if err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-
-	if res.StatusCode > 299 {
-		return errors.New("error: received non-200 response code")
-	}
-
-	var loc LocationList
-	if err := json.NewDecoder(res.Body).Decode(&loc); err != nil {
-		return err
-	}
-
-	for _, area := range loc.Results {
+	for _, area := range locations.Results {
 		fmt.Println(area.Name)
 	}
-	cfg.PreviousLocation = loc.Previous
-	cfg.NextLocation = loc.Next
+	cfg.PreviousLocation = locations.Previous
+	cfg.NextLocation = locations.Next
 	return nil
 }
 
 func commandMapB(cfg *Config) error {
-	if cfg.PreviousLocation == nil {
+	if cfg.PreviousLocation == "" {
 		fmt.Println("you're on the first page")
 		return nil
 	}
 
-	res, err := http.Get(cfg.PreviousLocation.(string))
+	locations, err := pokeapi.ListLocation(&cfg.PreviousLocation)
 	if err != nil {
 		return err
 	}
 
-	defer res.Body.Close()
-
-	if res.StatusCode > 299 {
-		return errors.New("error: received non-200 response code")
-	}
-
-	var loc LocationList
-	if err := json.NewDecoder(res.Body).Decode(&loc); err != nil {
-		return err
-	}
-
-	for _, area := range loc.Results {
+	for _, area := range locations.Results {
 		fmt.Println(area.Name)
 	}
-	cfg.PreviousLocation = loc.Previous
-	cfg.NextLocation = loc.Next
+	cfg.PreviousLocation = locations.Previous
+	cfg.NextLocation = locations.Next
 	return nil
-}
-
-type LocationList struct {
-	Count    int    `json:"count"`
-	Next     string `json:"next"`
-	Previous any    `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
 }

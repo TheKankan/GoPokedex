@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	NextLocation     string
-	PreviousLocation any
+	PreviousLocation string
 }
 
 func main() {
