@@ -32,6 +32,11 @@ func commandMap(cfg *Config) error {
 		cfg.NextLocation = "https://pokeapi.co/api/v2/location-area/"
 	}
 
+	/*pokeapi.listLocation(cfg.NextLocation)
+	if err != nil {
+		return err
+	}
+
 	res, err := http.Get(cfg.NextLocation)
 	if err != nil {
 		return err
