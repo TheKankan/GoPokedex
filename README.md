@@ -5,7 +5,7 @@ Allows user to check every zones to see what pokemon are located in it as well a
 
 commands :
 
-**help** : Displays a help message \n
+**help** : Displays a help message
 
 **map** : Displays the next areas of the Pokemon world
 
